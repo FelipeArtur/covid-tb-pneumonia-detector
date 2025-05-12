@@ -5,7 +5,7 @@ import seaborn as sns
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import MobileNetV2
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn.metrics import classification_report, confusion_matrix
@@ -16,6 +16,7 @@ BASE_DIR = "C:/Ragnarok/covid-tb-pneumonia-detector/dataset"
 TRAIN_DIR = os.path.join(BASE_DIR, "TRAIN")
 VAL_DIR = os.path.join(BASE_DIR, "VAL")
 TEST_DIR = os.path.join(BASE_DIR, "TEST")
+MODEL_PATH = "C:/Ragnarok/covid-tb-pneumonia-detector/BESTMODEL/best_model.h5"
 
 # Parâmetros
 IMG_SIZE = (224, 224)
@@ -52,32 +53,30 @@ test_gen = test_datagen.flow_from_directory(
 
 class_names = list(test_gen.class_indices.keys())
 
-# Modelo
-base_model = MobileNetV2(input_shape=IMG_SIZE + (3,), include_top=False, weights="imagenet")
-x = GlobalAveragePooling2D()(base_model.output)
-output = Dense(NUM_CLASSES, activation="softmax")(x)
+def treinar_modelo():
+    base_model = MobileNetV2(input_shape=IMG_SIZE + (3,), include_top=False, weights="imagenet")
+    x = GlobalAveragePooling2D()(base_model.output)
+    output = Dense(NUM_CLASSES, activation="softmax")(x)
+    model = Model(inputs=base_model.input, outputs=output)
 
-model = Model(inputs=base_model.input, outputs=output)
+    for layer in base_model.layers:
+        layer.trainable = False
 
-# Congelar base
-for layer in base_model.layers:
-    layer.trainable = False
+    model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
-# Compilar
-model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+    checkpoint = ModelCheckpoint(MODEL_PATH, monitor="val_accuracy", save_best_only=True, verbose=1)
 
-# Callback
-checkpoint = ModelCheckpoint("best_model.h5", monitor="val_accuracy", save_best_only=True, verbose=1)
+    history = model.fit(
+        train_gen,
+        validation_data=val_gen,
+        epochs=EPOCHS,
+        callbacks=[checkpoint]
+    )
 
-# Treinamento
-history = model.fit(
-    train_gen,
-    validation_data=val_gen,
-    epochs=EPOCHS,
-    callbacks=[checkpoint]
-)
+    plot_history(history)
 
-# Gráficos de acurácia e perda
+    return model
+
 def plot_history(history):
     plt.figure(figsize=(14, 5))
 
@@ -100,33 +99,11 @@ def plot_history(history):
     plt.tight_layout()
     plt.show()
 
-plot_history(history)
+def carregar_modelo():
+    return load_model(MODEL_PATH)
 
-# Avaliação
-model.load_weights("best_model.h5")
-loss, acc = model.evaluate(test_gen)
-print(f"\nAcurácia final no teste: {acc*100:.2f}%")
-
-# Predição e matriz de confusão
-y_pred = model.predict(test_gen)
-y_pred_classes = np.argmax(y_pred, axis=1)
-y_true = test_gen.classes
-
-print("\nRelatório de Classificação:\n")
-print(classification_report(y_true, y_pred_classes, target_names=class_names))
-
-# Matriz de confusão
-cm = confusion_matrix(y_true, y_pred_classes)
-
-plt.figure(figsize=(8, 6))
-sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
-plt.xlabel("Predito")
-plt.ylabel("Real")
-plt.title("Matriz de Confusão")
-plt.show()
-
-# Função para prever imagem
 def prever_imagem(caminho_imagem):
+    model = carregar_modelo()
     img = load_img(caminho_imagem, target_size=IMG_SIZE)
     img_array = img_to_array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
@@ -141,5 +118,26 @@ def prever_imagem(caminho_imagem):
     for i, prob in enumerate(pred):
         print(f"{class_names[i]}: {prob*100:.2f}%")
 
-# Exemplo de uso:
-# prever_imagem("C:/Ragnarok/covid-tb-pneumonia-detector/dataset/TEST/COVID/alguma_imagem.png")
+# Evita que o código treine ao ser importado
+if __name__ == "__main__":
+    model = treinar_modelo()
+    print("\nModelo treinado e salvo com sucesso.")
+
+    loss, acc = model.evaluate(test_gen)
+    print(f"\nAcurácia final no teste: {acc*100:.2f}%")
+
+    y_pred = model.predict(test_gen)
+    y_pred_classes = np.argmax(y_pred, axis=1)
+    y_true = test_gen.classes
+
+    print("\nRelatório de Classificação:\n")
+    print(classification_report(y_true, y_pred_classes, target_names=class_names))
+
+    cm = confusion_matrix(y_true, y_pred_classes)
+
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=class_names, yticklabels=class_names)
+    plt.xlabel("Predito")
+    plt.ylabel("Real")
+    plt.title("Matriz de Confusão")
+    plt.show()
