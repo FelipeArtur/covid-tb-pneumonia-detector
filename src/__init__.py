@@ -1,1 +1,1 @@
-# This file makes the src directory a Python package
+# Torna o diretório src um pacote Python.
