@@ -12,16 +12,16 @@ from sklearn.metrics import classification_report, confusion_matrix
 from pathlib import Path
 import time
 
-# Get the base directory of the project
+# Diretório base do projeto
 BASE_DIR = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Directories
+# Diretórios de dados
 DATASET_DIR = BASE_DIR / "dataset"
 TRAIN_DIR = DATASET_DIR / "TRAIN"
 VAL_DIR = DATASET_DIR / "VAL"
 TEST_DIR = DATASET_DIR / "TEST"
 
-# Create models directory if it doesn't exist
+# Diretório para salvar modelos treinados
 MODELS_DIR = BASE_DIR / "models"
 MODELS_DIR.mkdir(exist_ok=True)
 
@@ -29,17 +29,19 @@ MODEL_PATH = MODELS_DIR / "best_model.h5"
 RESULTS_DIR = BASE_DIR / "results"
 RESULTS_DIR.mkdir(exist_ok=True)
 
-# Parameters
+# Parâmetros do modelo
 IMG_SIZE = (224, 224)
 BATCH_SIZE = 32
 EPOCHS = 10 
 NUM_CLASSES = 4
 
-# Class names (order matters - should match directory order)
+# Nomes das classes (ordem deve ser igual à dos diretórios)
 CLASS_NAMES = ["COVID", "NORMAL", "PNEUMONIA", "TUBERCULOSIS"]
 
 def create_data_generators():
-    """Create and return data generators for training, validation, and testing."""
+    """
+    Cria e retorna os geradores de dados para treino, validação e teste.
+    """
     train_datagen = ImageDataGenerator(
         rescale=1./255,
         rotation_range=15,
@@ -80,13 +82,15 @@ def create_data_generators():
     return train_gen, val_gen, test_gen
 
 def build_model():
-    """Build and return the MobileNetV2 model with custom top layers."""
+    """
+    Constrói e retorna o modelo MobileNetV2 com camadas superiores customizadas.
+    """
     base_model = MobileNetV2(input_shape=IMG_SIZE + (3,), include_top=False, weights="imagenet")
     x = GlobalAveragePooling2D()(base_model.output)
     output = Dense(NUM_CLASSES, activation="softmax")(x)
     model = Model(inputs=base_model.input, outputs=output)
 
-    # Freeze base model layers
+    # Congela as camadas do modelo base
     for layer in base_model.layers:
         layer.trainable = False
 
@@ -94,7 +98,9 @@ def build_model():
     return model
 
 def plot_history(history):
-    """Plot training and validation accuracy/loss."""
+    """
+    Plota e salva o histórico de treino (acurácia e perda).
+    """
     plt.figure(figsize=(14, 5))
 
     plt.subplot(1, 2, 1)
@@ -119,28 +125,30 @@ def plot_history(history):
     plt.close()
 
 def evaluate_model(model, test_gen):
-    """Evaluate the model and display performance metrics."""
-    # Evaluate model
+    """
+    Avalia o modelo e exibe métricas de desempenho.
+    """
+    # Avalia o modelo
     loss, acc = model.evaluate(test_gen)
     print(f"\nTest accuracy: {acc*100:.2f}%")
 
-    # Generate predictions
+    # Gera previsões
     y_pred = model.predict(test_gen, verbose=1)
     y_pred_classes = np.argmax(y_pred, axis=1)
     y_true = test_gen.classes
 
-    # Display classification report
+    # Exibe relatório de classificação
     print("\nClassification Report:\n")
     report = classification_report(y_true, y_pred_classes, target_names=CLASS_NAMES)
     print(report)
     
-    # Save classification report to file
+    # Salva o relatório de classificação em um arquivo
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     with open(RESULTS_DIR / f'classification_report_{timestamp}.txt', 'w') as f:
         f.write(f"Test accuracy: {acc*100:.2f}%\n\n")
         f.write(report)
 
-    # Display confusion matrix
+    # Exibe a matriz de confusão
     cm = confusion_matrix(y_true, y_pred_classes)
 
     plt.figure(figsize=(10, 8))
@@ -154,13 +162,15 @@ def evaluate_model(model, test_gen):
     plt.close()
 
 def train_model():
-    """Train the model and evaluate it."""
+    """
+    Treina o modelo, salva o melhor checkpoint e avalia no conjunto de teste.
+    """
     train_gen, val_gen, test_gen = create_data_generators()
     model = build_model()
     
     print(f"\nTraining with {train_gen.samples} training images and {val_gen.samples} validation images")
     
-    # Setup checkpoints and early stopping
+    # Configura checkpoints e early stopping
     checkpoint = ModelCheckpoint(
         MODEL_PATH,
         monitor="val_accuracy",
@@ -175,7 +185,7 @@ def train_model():
         verbose=1
     )
 
-    # Train the model
+    # Treina o modelo
     print("\nTraining model...")
     history = model.fit(
         train_gen,
@@ -184,27 +194,27 @@ def train_model():
         callbacks=[checkpoint, early_stopping]
     )
 
-    # Plot training history
+    # Plota o histórico de treino
     plot_history(history)
     
-    # Load the best saved model
+    # Carrega o melhor modelo salvo
     best_model = load_model(MODEL_PATH)
     
-    # Evaluate the model
+    # Avalia o modelo
     evaluate_model(best_model, test_gen)
     
     return best_model
 
 if __name__ == "__main__":
-    # Check if dataset directories exist
+    # Validação dos diretórios de dados
     if not (TRAIN_DIR.exists() and VAL_DIR.exists() and TEST_DIR.exists()):
-        print("ERROR: Dataset directories not found. Please ensure the dataset is correctly organized.")
-        print("Expected structure:")
+        print("ERRO: Diretórios do dataset não encontrados. Verifique a estrutura do dataset.")
+        print("Estrutura esperada:")
         print(f"dataset/TRAIN/[COVID, NORMAL, PNEUMONIA, TUBERCULOSIS]")
         print(f"dataset/VAL/[COVID, NORMAL, PNEUMONIA, TUBERCULOSIS]")
         print(f"dataset/TEST/[COVID, NORMAL, PNEUMONIA, TUBERCULOSIS]")
         exit(1)
     
-    # Train the model
+    # Treinamento do modelo
     model = train_model()
-    print("\nModel training completed and best model saved at:", MODEL_PATH)
+    print("\nTreinamento concluído. Melhor modelo salvo em:", MODEL_PATH)
