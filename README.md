@@ -2,178 +2,191 @@
 
 Deep learning model to detect COVID-19, Tuberculosis, Pneumonia, and Normal conditions from chest X-ray images.
 
-## Project Overview
+---
 
-This project uses a MobileNetV2-based convolutional neural network to classify chest X-ray images into four categories:
+## 🩺 **Visão Geral do Projeto**
+
+Este projeto utiliza uma rede neural convolucional baseada em MobileNetV2 para classificar imagens de raio-X de tórax em quatro categorias:
 - COVID-19
-- Tuberculosis (TB)
+- Tuberculose (TB)
 - Pneumonia
 - Normal
 
-The model is trained on X-ray images and can be used to predict the condition of new, unseen X-ray images.
+O modelo é treinado em imagens de raio-X e pode ser utilizado para prever a condição de novas imagens.
 
-## Project Structure
+---
+
+## 📁 **Estrutura do Projeto**
 
 ```
 covid-tb-pneumonia-detector/
-├── dataset/              # Dataset directory (you must create this)
-│   ├── TRAIN/            # Training images
-│   │   ├── COVID/        # COVID-19 X-ray images
-│   │   ├── NORMAL/       # Normal X-ray images
-│   │   ├── PNEUMONIA/    # Pneumonia X-ray images
-│   │   └── TUBERCULOSIS/ # Tuberculosis X-ray images
-│   ├── VAL/              # Validation images (same structure as TRAIN)
-│   └── TEST/             # Test images (same structure as TRAIN)
-├── models/               # Directory to store trained models
-├── results/              # Directory to store evaluation results
-├── src/                  # Source code
-│   ├── model.py          # Model definition and training
-│   ├── predict.py        # Prediction functionality
-│   └── interpret.py      # Model interpretability (Grad-CAM visualization)
-├── scripts/              # User scripts
-│   └── predict_batch.py  # Script for batch image prediction
-├── requirements.txt      # Dependencies
-└── README.md             # This file
+├── dataset/              # Dataset (você deve criar)
+│   ├── TRAIN/
+│   │   ├── COVID/
+│   │   ├── NORMAL/
+│   │   ├── PNEUMONIA/
+│   │   └── TUBERCULOSIS/
+│   ├── VAL/
+│   │   ├── COVID/
+│   │   ├── NORMAL/
+│   │   ├── PNEUMONIA/
+│   │   └── TUBERCULOSIS/
+│   └── TEST/
+│       ├── COVID/
+│       ├── NORMAL/
+│       ├── PNEUMONIA/
+│       └── TUBERCULOSIS/
+├── models/               # Modelos treinados
+├── results/              # Resultados e métricas
+├── src/                  # Código fonte
+│   ├── model.py
+│   ├── predict.py
+│   ├── predict_batch.py
+│   └── interpret.py
+├── scripts/              # Scripts de instalação
+│   ├── install.sh        # Instalação para Linux
+│   └── install.bat       # Instalação para Windows
+├── requirements.txt      # Dependências
+└── README.md             # Este arquivo
 ```
 
-## Important Notes for Project Setup
+---
 
-1. **Dataset Preparation**: This is the most critical step!
-   - The dataset must follow the exact directory structure shown above
-   - All subdirectories must have identical class names (COVID, NORMAL, PNEUMONIA, TUBERCULOSIS)
-   - Images should be in standard formats (JPG, PNG)
+## ⚠️ **Notas Importantes**
 
-2. **Model Training**:
-   - Training requires sufficient GPU resources - at least 4GB VRAM is recommended
-   - Initial training may take several hours depending on dataset size
+1. **Preparação do Dataset**
+   - Siga exatamente a estrutura de diretórios acima.
+   - Os nomes das subpastas devem ser: `COVID`, `NORMAL`, `PNEUMONIA`, `TUBERCULOSIS`.
+   - Imagens devem estar em formatos padrão (JPG, PNG, BMP).
 
-3. **Predictions**:
-   - The model will only work with chest X-ray images similar to the training data
-   - Images must be properly oriented and of sufficient quality
+2. **Validação**
+   - O código valida a existência dos diretórios e arquivos essenciais antes de rodar.
+   - Mensagens de erro claras são exibidas caso algo esteja faltando.
 
-## Installation
+3. **Treinamento**
+   - Requer GPU com pelo menos 4GB de VRAM para desempenho adequado.
+   - O tempo de treinamento depende do tamanho do dataset.
 
-1. Clone the repository:
+4. **Predição**
+   - O modelo só funciona corretamente com imagens similares às do treino.
+   - Imagens devem estar bem orientadas e com boa qualidade.
+
+---
+
+## 🛠️ **Instalação**
+
+### Instalação Automática (Recomendado)
+
+Utilize os scripts de instalação para criar o ambiente virtual com `venv` e instalar as dependências automaticamente.
+
+#### **Linux**
+
 ```bash
-git clone https://github.com/username/covid-tb-pneumonia-detector.git
-cd covid-tb-pneumonia-detector
+# Python 3.9 é obrigatório!
+bash scripts/install.sh
 ```
 
-2. **IMPORTANT: Python 3.9 Required**
-   TensorFlow is only compatible with Python up to version 3.9 and will not work with Python 3.13.3.
+#### **Windows**
 
-   Option 1: If you have Python 3.9 installed:
-   ```bash
-   python3.9 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+```bat
+REM Python 3.9 é obrigatório!
+scripts\install.bat
+```
 
-   Option 2: Using Conda (recommended):
-   ```bash
-   conda create -n covid-detector python=3.9
-   conda activate covid-detector
-   pip install -r requirements.txt
-   ```
+Após a instalação, ative o ambiente virtual:
 
-   Option 3: Using Docker:
-   ```bash
-   # A Dockerfile is provided in the repository
-   docker build -t covid-detector .
-   docker run -it covid-detector
-   ```
+- **Linux:**  
+  ```bash
+  source venv/bin/activate
+  ```
+- **Windows:**  
+  ```bat
+  venv\Scripts\activate.bat
+  ```
 
-3. Run tests to ensure the setup is correct:
+### Instalação Manual (Alternativa)
+
+Se preferir, crie o ambiente manualmente:
+
 ```bash
-pytest
+# Usando venv
+python3.9 -m venv venv
+source venv/bin/activate  # Linux
+venv\Scripts\activate.bat # Windows
+
+pip install --upgrade pip
+pip install -r requirements.txt
 ```
 
-4. Download the dataset (instructions below) and place it in the `dataset` directory.
+> **Atenção:** Python 3.9 é obrigatório! TensorFlow 2.10 não é compatível com Python >=3.13.
 
-## Python Version
+---
 
-**This project requires Python 3.9 specifically.**
+## 📦 **Dataset**
 
-TensorFlow is not compatible with Python 3.13.3. You must use Python 3.9 to run this project.
-
-## Dataset
-
-You can download chest X-ray datasets from:
+Baixe os datasets de raio-X em:
 - [COVID-19 Radiography Database](https://www.kaggle.com/tawsifurrahman/covid19-radiography-database)
 - [Chest X-Ray Images (Pneumonia)](https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia)
 - [Tuberculosis X-ray Images](https://www.kaggle.com/tawsifurrahman/tuberculosis-tb-chest-xray-dataset)
 
-After downloading, organize the images into the required directory structure described above.
+Organize as imagens conforme a estrutura de diretórios.
 
-## Usage
+---
 
-### Training the Model
+## 🚀 **Uso**
 
-To train the model:
+### Treinando o Modelo
 
 ```bash
 python src/model.py
 ```
+- O modelo será salvo em `models/best_model.h5`.
+- Métricas e gráficos em `results/`.
 
-The training process will:
-1. Load images from the dataset directory
-2. Train a MobileNetV2-based model
-3. Save the best model to `models/best_model.h5`
-4. Generate performance metrics in the `results` directory
-
-### Making Single Predictions
-
-To predict a single image:
+### Predição Individual
 
 ```bash
-python src/predict.py --image path/to/your/image.png
+python src/predict.py --image caminho/para/imagem.png
 ```
+- Exibe imagem, gráfico de probabilidades e resultado textual.
 
-This will display:
-- The original X-ray image
-- A bar chart showing prediction probabilities
-- Text output with detailed prediction results
-
-#### Model Interpretability with Grad-CAM
-
-For better understanding of what the model is focusing on:
+#### Interpretação com Grad-CAM
 
 ```bash
-python src/predict.py --image path/to/your/image.png --gradcam
+python src/predict.py --image caminho/para/imagem.png --gradcam
 ```
+- Exibe Grad-CAM, overlay e gráfico de probabilidades.
 
-This will display:
-- The original X-ray image
-- A Grad-CAM heatmap showing important regions for the prediction
-- An overlay of the heatmap on the original image
-- A bar chart showing prediction probabilities
-
-### Batch Predictions
-
-To predict multiple images in a directory:
+### Predição em Lote
 
 ```bash
-python scripts/predict_batch.py --dir path/to/images --output results.csv
+python src/predict_batch.py --dir caminho/para/imagens --output resultados.csv
 ```
-
-To also generate Grad-CAM visualizations for all images:
-
+- Para salvar Grad-CAMs:
 ```bash
-python scripts/predict_batch.py --dir path/to/images --output results.csv --save-gradcam
+python src/predict_batch.py --dir caminho/para/imagens --output resultados.csv --save-gradcam
 ```
 
-This will:
-- Process all images in the specified directory
-- Output results to the console
-- Save detailed results to a CSV file if `--output` is specified
-- Save Grad-CAM visualizations to a subdirectory if `--save-gradcam` is specified
+---
 
-## Performance
+## 📊 **Performance**
 
-The model is evaluated using accuracy, precision, recall, and F1-score. A confusion matrix is also generated to visualize the performance.
+- Avaliação por acurácia, precisão, recall, F1-score e matriz de confusão.
+- Resultados salvos em `results/`.
 
-Training results and model performance metrics will be saved in the `results` directory.
+---
 
-## License
+## 📝 **Licença**
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License - veja o arquivo LICENSE para detalhes.
+
+---
+
+## 💡 **Dicas e Solução de Problemas**
+
+- **Erro de diretório:** Verifique se a estrutura do dataset está correta.
+- **Erro de versão do Python:** Use Python 3.9.
+- **Problemas de memória:** Reduza o batch size ou use uma GPU com mais VRAM.
+- **Resultados inesperados:** Certifique-se de que as imagens de entrada são similares às do treino.
+
+---
