@@ -8,21 +8,23 @@ from tensorflow.keras.utils import load_img, img_to_array
 import argparse
 from pathlib import Path
 
-# Get the base directory of the project
+# Diretório base do projeto
 BASE_DIR = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Define the path to the model
+# Caminho do modelo treinado
 MODELS_DIR = BASE_DIR / "models"
 MODEL_PATH = MODELS_DIR / "best_model.h5"
 
-# Image size (must match the training size)
+# Tamanho da imagem (deve ser igual ao usado no treino)
 IMG_SIZE = (224, 224)
 
-# Class names (order matters - should match training order)
+# Nomes das classes (ordem igual ao treino)
 CLASS_NAMES = ["COVID", "NORMAL", "PNEUMONIA", "TUBERCULOSIS"]
 
 def load_and_preprocess_image(image_path):
-    """Load and preprocess an image for prediction."""
+    """
+    Carrega e pré-processa uma imagem para predição.
+    """
     try:
         # Convert string path to Path object for better cross-platform compatibility
         image_path = Path(image_path)
@@ -47,7 +49,9 @@ def load_and_preprocess_image(image_path):
         return None, None
 
 def predict_image(image_path, show_plot=True, show_gradcam=False):
-    """Predict the class of an X-ray image."""
+    """
+    Prediz a classe de uma imagem de raio-X.
+    """
     # Check if model exists
     if not MODEL_PATH.exists():
         print(f"Error: Model not found at {MODEL_PATH}")
@@ -143,6 +147,9 @@ def predict_image(image_path, show_plot=True, show_gradcam=False):
     return results
 
 def main():
+    """
+    Interface de linha de comando para predição de uma imagem.
+    """
     parser = argparse.ArgumentParser(description='Predict chest X-ray condition.')
     parser.add_argument('--image', type=str, required=True,
                         help='Path to the X-ray image to predict')
