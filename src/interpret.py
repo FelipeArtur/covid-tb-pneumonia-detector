@@ -7,7 +7,7 @@ import matplotlib.cm as cm
 
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
     """
-    Generate Grad-CAM heatmap for an image.
+    Gera o heatmap Grad-CAM para uma imagem.
     
     Args:
         img_array: Preprocessed image array (batch of 1)
@@ -59,7 +59,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None
 
 def apply_gradcam(model, img, img_array, class_idx=None, alpha=0.4):
     """
-    Apply Grad-CAM visualization to an image.
+    Aplica a visualização Grad-CAM em uma imagem.
     
     Args:
         model: Trained model
@@ -121,7 +121,7 @@ def apply_gradcam(model, img, img_array, class_idx=None, alpha=0.4):
 
 def display_gradcam(model, img, img_array, class_names, pred_class_idx=None):
     """
-    Display Grad-CAM visualization along with the original image.
+    Exibe a visualização Grad-CAM junto com a imagem original.
     
     Args:
         model: Trained model
