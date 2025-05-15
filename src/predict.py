@@ -8,6 +8,9 @@ from tensorflow.keras.utils import load_img, img_to_array
 import argparse
 from pathlib import Path
 
+# Add the project root directory to Python's path to allow local imports
+sys.path.append(str(Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
 # Diretório base do projeto
 BASE_DIR = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -91,47 +94,100 @@ def predict_image(image_path, show_plot=True, show_gradcam=False):
             # Import here to avoid circular imports
             from src.interpret import display_gradcam
             
-            # Generate and display Grad-CAM visualization
-            fig = display_gradcam(model, img, img_array, CLASS_NAMES, np.argmax(predictions))
-            if fig:
-                # Add a subplot for prediction probabilities
-                ax = fig.add_subplot(1, 4, 4)
-                colors = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99']
-                bars = ax.barh(CLASS_NAMES, predictions, color=colors)
-                ax.set_xlabel('Probability')
-                ax.set_xlim(0, 1)
-                ax.set_title('Prediction Results')
+            # Generate Grad-CAM components
+            gradcam_data = display_gradcam(model, img, img_array, CLASS_NAMES, np.argmax(predictions))
+            
+            if gradcam_data:
+                # Create a figure with a 2x2 grid layout for better organization
+                fig, axes = plt.subplots(2, 2, figsize=(15, 12), gridspec_kw={'height_ratios': [2, 1]})
                 
-                # Add probability values as text
+                # Row 1: Original image, heatmap, and overlay
+                axes[0, 0].imshow(gradcam_data['original_img'])
+                axes[0, 0].set_title("Original X-ray", fontsize=14)
+                axes[0, 0].axis('off')
+                
+                axes[0, 1].imshow(gradcam_data['heatmap'], cmap='jet')
+                axes[0, 1].set_title(f"Grad-CAM Heatmap", fontsize=14)
+                axes[0, 1].set_xlabel(f"Class: {gradcam_data['class_name']} ({results['confidence']*100:.1f}% confidence)")
+                axes[0, 1].axis('off')
+                
+                # Row 2: Overlay image and probability bars
+                axes[1, 0].imshow(gradcam_data['overlay_img'])
+                axes[1, 0].set_title("Heatmap Overlay", fontsize=14)
+                axes[1, 0].set_xlabel("Highlighted areas show regions important for the prediction")
+                axes[1, 0].axis('off')
+                
+                # Probability bars with clearer formatting
+                colors = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99']
+                bars = axes[1, 1].barh(CLASS_NAMES, predictions, color=colors)
+                axes[1, 1].set_title('Prediction Probabilities', fontsize=14)
+                axes[1, 1].set_xlabel('Probability')
+                axes[1, 1].set_xlim(0, 1)
+                
+                # Add probability values as text with improved formatting
                 for i, bar in enumerate(bars):
-                    ax.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height()/2, 
-                           f'{predictions[i]:.2%}', va='center')
+                    text_color = 'black' if predictions[i] < 0.7 else 'white'
+                    weight = 'bold' if i == np.argmax(predictions) else 'normal'
+                    axes[1, 1].text(
+                        min(bar.get_width() + 0.01, 0.99),
+                        bar.get_y() + bar.get_height()/2, 
+                        f'{predictions[i]:.1%}',
+                        va='center',
+                        ha='right' if predictions[i] > 0.9 else 'left',
+                        color=text_color,
+                        weight=weight
+                    )
+                
+                # Add a title to the entire figure
+                fig.suptitle(
+                    f"X-ray Analysis: {Path(image_path).name}\n"
+                    f"Prediction: {results['predicted_class']} (Confidence: {results['confidence']*100:.1f}%)",
+                    fontsize=16
+                )
                 
                 plt.tight_layout()
+                plt.subplots_adjust(top=0.9)  # Make room for the title
                 plt.show()
         else:
-            plt.figure(figsize=(12, 6))
+            # Regular visualization without Grad-CAM
+            fig, axes = plt.subplots(1, 2, figsize=(15, 6))
             
-            # Display the image
-            plt.subplot(1, 2, 1)
-            plt.imshow(img)
-            plt.axis('off')
-            plt.title("X-ray Image")
+            # Display the image with proper title
+            axes[0].imshow(img)
+            axes[0].set_title("X-ray Image", fontsize=14)
+            axes[0].set_xlabel(f"File: {Path(image_path).name}")
+            axes[0].axis('off')
             
-            # Display prediction probabilities
-            plt.subplot(1, 2, 2)
+            # Display prediction probabilities with improved formatting
             colors = ['#FF9999', '#66B2FF', '#99FF99', '#FFCC99']
-            bars = plt.barh(CLASS_NAMES, predictions, color=colors)
-            plt.xlabel('Probability')
-            plt.xlim(0, 1)
-            plt.title('Prediction Results')
+            bars = axes[1].barh(CLASS_NAMES, predictions, color=colors)
+            axes[1].set_title('Prediction Probabilities', fontsize=14)
+            axes[1].set_xlabel('Probability')
+            axes[1].set_xlim(0, 1)
             
-            # Add probability values as text
+            # Highlight the predicted class
             for i, bar in enumerate(bars):
-                plt.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height()/2, 
-                        f'{predictions[i]:.2%}', va='center')
+                text_color = 'black' if predictions[i] < 0.7 else 'white'
+                weight = 'bold' if i == np.argmax(predictions) else 'normal'
+                axes[1].text(
+                    min(bar.get_width() + 0.01, 0.99),
+                    bar.get_y() + bar.get_height()/2, 
+                    f'{predictions[i]:.1%}',
+                    va='center',
+                    ha='right' if predictions[i] > 0.9 else 'left',
+                    color=text_color,
+                    weight=weight
+                )
+            
+            # Add a title to the entire figure
+            fig.suptitle(
+                f"Predicted condition: {results['predicted_class']} "
+                f"(Confidence: {results['confidence']*100:.1f}%)",
+                fontsize=16
+            )
             
             plt.tight_layout()
+            plt.subplots_adjust(top=0.9)  # Make room for the title
             plt.show()
     
     # Print results

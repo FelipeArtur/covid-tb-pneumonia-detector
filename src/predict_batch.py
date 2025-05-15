@@ -83,6 +83,8 @@ def predict_batch(directory_path, output_file=None, extensions=None, save_gradca
             
             # Gera e salva visualização Grad-CAM, se solicitado
             if save_gradcam:
+                # Importa aqui para evitar importações circulares
+                from src.interpret import display_gradcam
                 from src.predict import load_and_preprocess_image
                 
                 img, img_array = load_and_preprocess_image(str(img_path))
