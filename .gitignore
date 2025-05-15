@@ -173,12 +173,6 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Dataset (too large for git)
-dataset/
-
-# Models (can be large)
-models/*.h5
-
 # OS specific
 .DS_Store
 Thumbs.db
