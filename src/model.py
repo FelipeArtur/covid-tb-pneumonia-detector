@@ -292,7 +292,7 @@ def evaluate_model(model, test_gen):
             f.write(f"  - Precision: {precision:.4f}\n")
 
 def train_model(base_model_name="mobilenetv2", img_size=(224, 224), batch_size=32, 
-                epochs=15, dropout_rate=0.3, fine_tuning=True, fine_tuning_layers=30,
+                epochs=5, dropout_rate=0.3, fine_tuning=True, fine_tuning_layers=30,
                 use_class_weights=True, enhanced_aug=True):
     """
     Treina o modelo, salva o melhor checkpoint e avalia no conjunto de teste.
