@@ -1,0 +1,32 @@
+Test accuracy: 89.36%
+
+              precision    recall  f1-score   support
+
+       COVID       0.99      0.75      0.85      1205
+      NORMAL       0.85      0.99      0.91      1501
+   PNEUMONIA       0.83      1.00      0.91       390
+TUBERCULOSIS       1.00      0.84      0.91       307
+
+    accuracy                           0.89      3403
+   macro avg       0.92      0.90      0.90      3403
+weighted avg       0.91      0.89      0.89      3403
+
+COVID:
+  - Sensitivity/Recall: 0.7485
+  - Specificity: 0.9945
+  - Precision: 0.9869
+
+NORMAL:
+  - Sensitivity/Recall: 0.9933
+  - Specificity: 0.8580
+  - Precision: 0.8467
+
+PNEUMONIA:
+  - Sensitivity/Recall: 1.0000
+  - Specificity: 0.9738
+  - Precision: 0.8316
+
+TUBERCULOSIS:
+  - Sensitivity/Recall: 0.8404
+  - Specificity: 0.9997
+  - Precision: 0.9961
