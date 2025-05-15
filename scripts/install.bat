@@ -15,7 +15,7 @@ echo ===================================================================
 cd %~dp0..
 
 echo [1/4] Creating Python virtual environment...
-python3.9 -m venv venv
+py -3.9 -m venv venv
 if %ERRORLEVEL% neq 0 (
     echo Failed to create virtual environment. Please make sure Python 3 is installed.
     exit /b 1
