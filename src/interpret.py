@@ -121,7 +121,7 @@ def apply_gradcam(model, img, img_array, class_idx=None, alpha=0.4):
 
 def display_gradcam(model, img, img_array, class_names, pred_class_idx=None):
     """
-    Exibe a visualização Grad-CAM junto com a imagem original.
+    Generates Grad-CAM visualization components.
     
     Args:
         model: Trained model
@@ -131,7 +131,7 @@ def display_gradcam(model, img, img_array, class_names, pred_class_idx=None):
         pred_class_idx: Index of the predicted class (optional)
         
     Returns:
-        Figure object
+        Dictionary containing the original image, heatmap, and overlay image
     """
     # Get predictions if class index not provided
     if pred_class_idx is None:
@@ -146,27 +146,11 @@ def display_gradcam(model, img, img_array, class_names, pred_class_idx=None):
     
     if heatmap is None or superimposed_img is None:
         return None
-        
-    # Create figure for display
-    fig = plt.figure(figsize=(15, 5))
     
-    # Display original image
-    plt.subplot(1, 3, 1)
-    plt.imshow(img)
-    plt.title("Original X-ray")
-    plt.axis('off')
-    
-    # Display heatmap
-    plt.subplot(1, 3, 2)
-    plt.imshow(heatmap, cmap='jet')
-    plt.title(f"Grad-CAM: {pred_class_name}")
-    plt.axis('off')
-    
-    # Display superimposed image
-    plt.subplot(1, 3, 3)
-    plt.imshow(superimposed_img)
-    plt.title(f"Heatmap Overlay: {pred_class_name}")
-    plt.axis('off')
-    
-    plt.tight_layout()
-    return fig
+    # Return components instead of figure
+    return {
+        'original_img': img,
+        'heatmap': heatmap,
+        'overlay_img': superimposed_img,
+        'class_name': pred_class_name
+    }
