@@ -43,7 +43,7 @@ def load_and_preprocess_image(image_path):
             print("Supported formats: .jpg, .jpeg, .png, .bmp")
             return None, None
             
-        img = load_img(str(image_path), target_size=IMG_SIZE)
+        img = load_img(str(image_path), target_size=IMG_SIZE, color_mode='rgb')
         img_array = img_to_array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
         return img, img_array
