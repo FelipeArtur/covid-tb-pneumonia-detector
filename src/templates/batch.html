@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch X-Ray Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">X-Ray Analyzer</div>
+            <ul>
+                <li><a href="/">Single Analysis</a></li>
+                <li><a href="/batch" class="active">Batch Processing</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="upload-section">
+                <h1>Batch X-Ray Analysis</h1>
+                <p>Upload multiple X-ray images for batch analysis</p>
+                
+                <div class="upload-area" id="batchDropZone">
+                    <input type="file" id="batchFileInput" accept=".jpg,.jpeg,.png" multiple hidden>
+                    <div class="upload-content">
+                        <img src="{{ url_for('static', filename='img/upload-icon.svg') }}" alt="Upload">
+                        <p>Drag and drop multiple X-ray images here<br>or <span class="highlight">click to browse</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="batch-results" style="display: none;">
+                <h2>Processing Results</h2>
+                <div class="batch-progress">
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <p class="progress-text">Processing 0/0 images</p>
+                </div>
+                <div class="results-grid"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 X-Ray Analysis Tool</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/batch.js') }}"></script>
+</body>
+</html>
