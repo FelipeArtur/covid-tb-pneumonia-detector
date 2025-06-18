@@ -27,7 +27,7 @@ cd covid-tb-pneumonia-detector
 
 2. Run the installation script:
 ```bash
-bash scripts/install.sh
+./scripts/install.sh
 ```
 
 3. Activate the virtual environment:
@@ -52,17 +52,17 @@ covid-tb-pneumonia-detector/
 ├── src/                 
 │   ├── static/          # CSS, JS, and images
 │   ├── templates/       # HTML templates
-│   ├── app.py          # Flask application
-│   ├── predict.py      # Prediction logic
-│   └── interpret.py    # Grad-CAM visualization
+│   ├── app.py           # Flask application
+│   ├── predict.py       # Prediction logic
+│   └── interpret.py     # Grad-CAM visualization
 ├── uploads/             # Temporary upload directory
 ├── scripts/            
-│   └── install.sh      # Installation script
-└── requirements.txt    
+│   └── install.sh       # Installation script
+└── requirements.txt     # Dependencies
 ```
 
 ## Usage
-1. Access the web interface at http://localhost:5000
+1. Access the web interface at `http://localhost:5000`
 2. Upload an X-ray image using drag-and-drop or file selection
 3. Toggle Grad-CAM visualization if desired
 4. View the analysis results and confidence scores
@@ -74,34 +74,8 @@ covid-tb-pneumonia-detector/
 - Frontend: HTML5, CSS3, JavaScript
 - Model: MobileNetV2 architecture with transfer learning
 
-## Team
-* **Developers**: Felipe Lima and Rafael Miguez
-* **Contributors**: Danilo Scheltes
-│   ├── VAL/
-│   │   ├── COVID/
-│   │   ├── NORMAL/
-│   │   ├── PNEUMONIA/
-│   │   └── TUBERCULOSIS/
-│   └── TEST/
-│       ├── COVID/
-│       ├── NORMAL/
-│       ├── PNEUMONIA/
-│       └── TUBERCULOSIS/
-├── models/               # Trained models
-├── results/              # Results and metrics
-├── src/                  # Source code
-│   ├── model.py          # Model definition and training
-│   ├── predict.py        # Single image prediction
-│   ├── predict_batch.py  # Batch prediction
-│   └── interpret.py      # Model interpretation
-├── scripts/              # Installation scripts
-│   ├── install.sh        # Linux installation
-│   └── install.bat       # Windows installation
-├── requirements.txt      # Dependencies
-└── README.md             
-```
 
-### Important Considerations
+## Important Considerations
 1. **Dataset Preparation**
    - Follow the directory structure exactly as shown above
    - Subdirectory names must be: `COVID`, `NORMAL`, `PNEUMONIA`, `TUBERCULOSIS`
@@ -136,40 +110,6 @@ Available base models:
 
 The model will be saved as `models/best_model.h5` and metrics/graphs will be saved in `results/`.
 
-### Individual Prediction
-
-```bash
-python src/predict.py --image path/to/image.png
-```
-
-This will:
-- Display the X-ray image
-- Show prediction probabilities for all classes
-- Highlight the predicted class with confidence score
-- Print detailed results to the console
-
-#### Visualization with Grad-CAM
-
-```bash
-python src/predict.py --image path/to/image.png --gradcam
-```
-
-This enhanced visualization includes:
-- Original X-ray image
-- Grad-CAM heatmap showing important regions for the prediction
-- Overlay visualization with highlighted areas
-- Prediction probabilities for all classes
-
-### Batch Prediction
-
-```bash
-python src/predict_batch.py --dir path/to/images --output results.csv
-```
-
-To save Grad-CAM visualizations for each image:
-```bash
-python src/predict_batch.py --dir path/to/images --output results.csv --save-gradcam
-```
 
 ## Key Files
 
