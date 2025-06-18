@@ -1,82 +1,82 @@
-# COVID-19, Tuberculosis, and Pneumonia Detector
+# X-Ray Analysis Tool
 
 ## Overview
-This repository contains a deep learning model that classifies chest X-ray images into four categories: COVID-19, Tuberculosis (TB), Pneumonia, and Normal (healthy). The project was developed using a convolutional neural network architecture based on transfer learning techniques.
-
-The **COVID-19, TB, and Pneumonia Detector** was created to assist medical professionals in the initial screening of chest X-ray images, potentially identifying patterns associated with respiratory conditions. By leveraging deep learning, the system can help prioritize cases that may require urgent medical attention, especially in resource-constrained settings.
+This web application analyzes chest X-ray images to detect COVID-19, Tuberculosis (TB), and Pneumonia using deep learning. Built with Flask and TensorFlow, it provides an intuitive interface for medical professionals to upload and analyze X-ray images.
 
 ## Features
-- **Multi-class Classification**: Differentiates between four distinct conditions (COVID-19, TB, Pneumonia, and Normal) with high accuracy.
-- **Transfer Learning Model**: Utilizes pre-trained CNN architectures (MobileNetV2, ResNet50V2, EfficientNetB0, or InceptionV3) fine-tuned on X-ray images.
-- **Grad-CAM Visualization**: Provides heatmap visualization to highlight regions of interest that influenced the model's decision.
-- **Batch Processing**: Supports processing multiple images at once with comprehensive reporting.
-- **Flexible Deployment**: Works with various image formats (JPG, PNG, BMP) and provides clear prediction results.
-- **Performance Metrics**: Generates detailed performance reports including accuracy, precision, recall, and F1-score.
+- **Web Interface**: User-friendly upload and analysis of chest X-rays
+- **Real-time Analysis**: Instant results with confidence scores
+- **Grad-CAM Visualization**: Heat map visualization of regions of interest
+- **Batch Processing**: Support for analyzing multiple images
+- **Responsive Design**: Works on desktop and mobile devices
 
-## Setup Process
-Before running the application, you need to set up the environment and prepare the dataset.
+## Setup
 
-### Installation Process
+### Requirements
+- Python 3.9
+- pip
+- Virtual environment (recommended)
 
-#### Automatic Installation (Recommended)
+### Installation
 
-Use the installation scripts to create a virtual environment with `venv` and install dependencies automatically.
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/covid-tb-pneumonia-detector.git
+cd covid-tb-pneumonia-detector
+```
 
-##### Linux
+2. Run the installation script:
 ```bash
 bash scripts/install.sh
 ```
 
-##### Windows
-```bat
-scripts\install.bat
-```
-
-After installation, activate the virtual environment:
-
-- **Linux:**  
-  ```bash
-  source venv/bin/activate
-  ```
-- **Windows:**  
-  ```bat
-  venv\Scripts\activate.bat
-  ```
-
-#### Manual Installation (Alternative)
-
-If you prefer, create the environment manually:
-
+3. Activate the virtual environment:
 ```bash
-python3.9 -m venv venv
-source venv/bin/activate  # Linux
-venv\Scripts\activate.bat # Windows
-
-pip install --upgrade pip
-pip install -r requirements.txt
+source venv/bin/activate
 ```
 
-> **Note:** Python 3.9 is required! TensorFlow 2.10 is not compatible with newer versions of Python.
+4. Start the application:
+```bash
+python src/app.py
+```
 
-### Dataset Preparation
-1. Download X-ray datasets from:
-   - [COVID-19 Radiography Database](https://www.kaggle.com/tawsifurrahman/covid19-radiography-database)
-   - [Chest X-Ray Images (Pneumonia)](https://www.kaggle.com/paultimothymooney/chest-xray-pneumonia)
-   - [Tuberculosis X-ray Images](https://www.kaggle.com/tawsifurrahman/tuberculosis-tb-chest-xray-dataset)
-
-2. Organize the images according to the directory structure specified in the Project Structure section.
+5. Open your browser and navigate to:
+```
+http://localhost:5000
+```
 
 ## Project Structure
-The repository is organized with a clear structure to separate code, data, and outputs.
-
 ```
 covid-tb-pneumonia-detector/
-├── dataset/              # Dataset (you need to create this)
-│   ├── TRAIN/
-│   │   ├── COVID/
-│   │   ├── NORMAL/
-│   │   ├── PNEUMONIA/
-│   │   └── TUBERCULOSIS/
+├── models/               # Trained model files
+├── src/                 
+│   ├── static/          # CSS, JS, and images
+│   ├── templates/       # HTML templates
+│   ├── app.py          # Flask application
+│   ├── predict.py      # Prediction logic
+│   └── interpret.py    # Grad-CAM visualization
+├── uploads/             # Temporary upload directory
+├── scripts/            
+│   └── install.sh      # Installation script
+└── requirements.txt    
+```
+
+## Usage
+1. Access the web interface at http://localhost:5000
+2. Upload an X-ray image using drag-and-drop or file selection
+3. Toggle Grad-CAM visualization if desired
+4. View the analysis results and confidence scores
+5. For batch processing, use the "Batch Processing" tab
+
+## Technical Details
+- Backend: Flask
+- Deep Learning: TensorFlow 2.10
+- Frontend: HTML5, CSS3, JavaScript
+- Model: MobileNetV2 architecture with transfer learning
+
+## Team
+* **Developers**: Felipe Lima and Rafael Miguez
+* **Contributors**: Danilo Scheltes
 │   ├── VAL/
 │   │   ├── COVID/
 │   │   ├── NORMAL/

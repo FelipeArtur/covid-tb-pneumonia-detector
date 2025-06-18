@@ -8,7 +8,7 @@
 # COVID-19, TB, and Pneumonia X-ray Analysis Tool - Linux Installation Script
 
 echo "==================================================================="
-echo "    Installing COVID-19, TB, and Pneumonia X-ray Analysis Tool      "
+echo "              Installing X-Ray Analysis Tool                         "
 echo "==================================================================="
 
 # Navigate to project root directory
@@ -17,7 +17,7 @@ PROJECT_ROOT="$( dirname "$SCRIPT_DIR" )"
 cd "$PROJECT_ROOT"
 
 echo -e "\n[1/4] Creating Python virtual environment..."
-python3.9 -m venv venv || { echo "Failed to create virtual environment. Please make sure Python 3 is installed."; exit 1; }
+python3.9 -m venv venv || { echo "Failed to create virtual environment. Please make sure Python 3.9 is installed."; exit 1; }
 
 echo -e "\n[2/4] Activating virtual environment..."
 source venv/bin/activate || { echo "Failed to activate virtual environment."; exit 1; }
@@ -27,20 +27,20 @@ pip install --upgrade pip
 pip install -r requirements.txt || { echo "Failed to install required packages."; exit 1; }
 
 echo -e "\n[4/4] Creating necessary directories..."
-mkdir -p dataset/TRAIN
-mkdir -p dataset/VAL
-mkdir -p dataset/TEST
+mkdir -p uploads
 mkdir -p models
-mkdir -p results
 
 echo -e "\n==================================================================="
 echo "                    Installation Complete!                           "
 echo "==================================================================="
-echo -e "\nTo use the application:"
+echo -e "\nTo start the application:"
 echo "1. Activate the virtual environment:"
 echo "   source venv/bin/activate"
-echo "2. Run the main application:"
-echo "   python main.py"
+echo "2. Run the Flask application:"
+echo "   python src/app.py"
+echo "3. Open your browser and navigate to:"
+echo "   http://localhost:5000"
+echo -e "==================================================================="
 echo -e "\nNOTE: Before training the model, you need to organize your dataset with the following structure:"
 echo "  dataset/TRAIN/[COVID, NORMAL, PNEUMONIA, TUBERCULOSIS]"
 echo "  dataset/VAL/[COVID, NORMAL, PNEUMONIA, TUBERCULOSIS]"
