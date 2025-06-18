@@ -27,6 +27,29 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.files.length) handleFile(e.target.files[0]);
     });
     
+    let totalPredictions = 0;
+    let confidenceSum = 0;
+    const diagnosisCount = {};
+    
+    // Update statistics
+    function updateStatistics(predictedClass, confidence) {
+        totalPredictions++;
+        confidenceSum += confidence;
+    
+        diagnosisCount[predictedClass] = (diagnosisCount[predictedClass] || 0) + 1;
+    
+        const frequentDiagnosis = Object.keys(diagnosisCount).reduce((a, b) =>
+            diagnosisCount[a] > diagnosisCount[b] ? a : b
+        );
+    
+        document.getElementById('totalPredictions').textContent = totalPredictions;
+        document.getElementById('frequentDiagnosis').textContent = frequentDiagnosis;
+        document.getElementById('averageConfidence').textContent = 
+            `${(confidenceSum / totalPredictions * 100).toFixed(1)}%`;
+    
+        document.querySelector('.statistics-section').style.display = 'block';
+    }
+    
     function handleFile(file) {
         if (!file.type.match('image.*')) {
             alert('Please upload an image file');
@@ -105,6 +128,9 @@ document.addEventListener('DOMContentLoaded', () => {
             `Diagnosis: ${results.predicted_class}`;
         document.querySelector('.confidence').textContent = 
             `Confidence: ${(results.confidence * 100).toFixed(1)}%`;
+        
+        // Update statistics
+        updateStatistics(results.predicted_class, results.confidence);
         
         // Show results section
         resultsSection.style.display = 'block';
