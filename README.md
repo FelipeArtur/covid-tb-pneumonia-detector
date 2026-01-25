@@ -1,151 +1,245 @@
-# X-Ray Analysis Tool
+# 🩺 COVID-TB-Pneumonia Detector
 
-## Overview
-This web application analyzes chest X-ray images to detect COVID-19, Tuberculosis (TB), and Pneumonia using deep learning. Built with Flask and TensorFlow, it provides an intuitive interface for medical professionals to upload and analyze X-ray images.
+Sistema de análise de raios-X torácicos para detecção de COVID-19, Tuberculose e Pneumonia usando Deep Learning.
 
-## Features
-- **Web Interface**: User-friendly upload and analysis of chest X-rays
-- **Real-time Analysis**: Instant results with confidence scores
-- **Grad-CAM Visualization**: Heat map visualization of regions of interest
-- **Batch Processing**: Support for analyzing multiple images
-- **Responsive Design**: Works on desktop and mobile devices
+![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.10-orange.svg)
+![Flask](https://img.shields.io/badge/Flask-2.0-green.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-## Setup
+## 📋 Índice
 
-### Requirements
-- Python 3.9
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Funcionalidades](#funcionalidades)
+- [Estrutura do Projeto](#estrutura-do-projeto)
+- [Instalação](#instalação)
+- [Como Usar](#como-usar)
+- [Documentação](#documentação)
+- [Performance](#performance)
+- [Equipe](#equipe)
+
+## 🎯 Sobre o Projeto
+
+Este projeto utiliza redes neurais convolucionais (CNNs) com transfer learning para classificar imagens de raios-X torácicos em quatro categorias:
+
+- **COVID-19**
+- **Normal**
+- **Pneumonia**
+- **Tuberculose**
+
+A aplicação oferece uma interface web intuitiva e visualizações Grad-CAM para interpretabilidade do modelo.
+
+## ✨ Funcionalidades
+
+| Funcionalidade | Descrição |
+|----------------|-----------|
+| 🌐 Interface Web | Upload e análise de raios-X via navegador |
+| ⚡ Análise em Tempo Real | Resultados instantâneos com scores de confiança |
+| 🔥 Grad-CAM | Visualização das regiões de interesse para a predição |
+| 📦 Processamento em Lote | Análise de múltiplas imagens com exportação CSV |
+| 🏗️ Múltiplas Arquiteturas | Suporte a MobileNetV2, ResNet50V2, EfficientNetB0, InceptionV3 |
+
+## 📁 Estrutura do Projeto
+
+```
+covid-tb-pneumonia-detector/
+├── dataset/                    # Dados de treino/validação/teste
+│   ├── TRAIN/
+│   ├── VAL/
+│   └── TEST/
+├── docs/                       # Documentação
+├── models/                     # Modelos treinados (.h5)
+├── results/                    # Métricas e gráficos
+├── scripts/                    # Scripts de instalação
+│   ├── install.sh
+│   └── install.bat
+└── src/
+    ├── core/                   # Lógica de Machine Learning
+    │   ├── config.py           # Configurações centralizadas
+    │   ├── data.py             # Data generators e preprocessamento
+    │   ├── model.py            # Construção do modelo
+    │   ├── train.py            # Treinamento e avaliação
+    │   ├── predict.py          # Predição individual
+    │   ├── predict_batch.py    # Predição em lote
+    │   └── interpret.py        # Grad-CAM (interpretabilidade)
+    └── web/                    # Frontend Flask
+        ├── app.py              # Aplicação web
+        ├── static/             # CSS, JS
+        └── templates/          # HTML
+```
+
+## 🚀 Instalação
+
+### Pré-requisitos
+
+- Python 3.9+
 - pip
-- Virtual environment (recommended)
+- GPU com 4GB+ VRAM (recomendado para treino)
 
-### Installation
+### Passo a Passo
 
-1. Clone the repository:
+1. **Clone o repositório:**
 ```bash
-git clone https://github.com/yourusername/covid-tb-pneumonia-detector.git
+git clone https://github.com/seu-usuario/covid-tb-pneumonia-detector.git
 cd covid-tb-pneumonia-detector
 ```
 
-2. Run the installation script:
+2. **Execute o script de instalação:**
+
+Linux/macOS:
 ```bash
+chmod +x scripts/install.sh
 ./scripts/install.sh
 ```
 
-3. Activate the virtual environment:
+Windows:
+```cmd
+scripts\install.bat
+```
+
+3. **Ative o ambiente virtual:**
+
+Linux/macOS:
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
-4. Start the application:
+Windows:
+```cmd
+.venv\Scripts\activate
+```
+
+4. **Prepare o dataset:**
+
+Organize as imagens na estrutura:
+```
+dataset/
+├── TRAIN/
+│   ├── COVID/
+│   ├── NORMAL/
+│   ├── PNEUMONIA/
+│   └── TUBERCULOSIS/
+├── VAL/
+│   └── (mesma estrutura)
+└── TEST/
+    └── (mesma estrutura)
+```
+
+## 💻 Como Usar
+
+### Treinar o Modelo
+
 ```bash
-python src/app.py
+# Treino básico
+python -m src.core.train
+
+# Treino customizado
+python -m src.core.train \
+    --model efficientnetb0 \
+    --epochs 20 \
+    --batch-size 16 \
+    --dropout 0.4
 ```
 
-5. Open your browser and navigate to:
-```
-http://localhost:5000
-```
+**Opções disponíveis:**
 
-## Project Structure
-```
-covid-tb-pneumonia-detector/
-├── models/               # Trained model files
-├── src/                 
-│   ├── static/          # CSS, JS, and images
-│   ├── templates/       # HTML templates
-│   ├── app.py           # Flask application
-│   ├── predict.py       # Prediction logic
-│   └── interpret.py     # Grad-CAM visualization
-├── uploads/             # Temporary upload directory
-├── scripts/            
-│   └── install.sh       # Installation script
-└── requirements.txt     # Dependencies
-```
+| Argumento | Padrão | Descrição |
+|-----------|--------|-----------|
+| `--model` | mobilenetv2 | Arquitetura (mobilenetv2, resnet50v2, efficientnetb0, inceptionv3) |
+| `--epochs` | 15 | Número de épocas |
+| `--batch-size` | 32 | Tamanho do batch |
+| `--dropout` | 0.3 | Taxa de dropout |
+| `--img-size` | 224 224 | Dimensões da imagem |
+| `--no-fine-tuning` | - | Desabilita fine-tuning |
+| `--no-class-weights` | - | Desabilita balanceamento de classes |
 
-## Usage
-1. Access the web interface at `http://localhost:5000`
-2. Upload an X-ray image using drag-and-drop or file selection
-3. Toggle Grad-CAM visualization if desired
-4. View the analysis results and confidence scores
-5. For batch processing, use the "Batch Processing" tab
+### Predição Individual
 
-## Technical Details
-- Backend: Flask
-- Deep Learning: TensorFlow 2.10
-- Frontend: HTML5, CSS3, JavaScript
-- Model: MobileNetV2 architecture with transfer learning
-
-
-## Important Considerations
-1. **Dataset Preparation**
-   - Follow the directory structure exactly as shown above
-   - Subdirectory names must be: `COVID`, `NORMAL`, `PNEUMONIA`, `TUBERCULOSIS`
-   - Images should be in standard formats (JPG, PNG, BMP)
-
-2. **Validation**
-   - The code validates the existence of essential directories and files before running
-   - Clear error messages are displayed if anything is missing
-
-3. **Training**
-   - Requires a GPU with at least 4GB of VRAM for adequate performance
-   - Training time depends on the dataset size
-
-4. **Prediction**
-   - The model only works correctly with images similar to those in the training set
-   - Images should be properly oriented and of good quality
-
-## Usage Instructions
-
-### Training the Model
-
-Basic training:
 ```bash
-python src/model.py
+# Predição simples
+python -m src.core.predict --image caminho/para/raio-x.png
+
+# Com visualização Grad-CAM
+python -m src.core.predict --image caminho/para/raio-x.png --gradcam
+
+# Sem exibir gráfico (para scripts)
+python -m src.core.predict --image caminho/para/raio-x.png --no-plot
 ```
 
-Available base models:
-- mobilenetv2 (default)
-- resnet50v2
-- efficientnetb0
-- inceptionv3
+### Predição em Lote
 
-The model will be saved as `models/best_model.h5` and metrics/graphs will be saved in `results/`.
+```bash
+# Processar diretório
+python -m src.core.predict_batch --dir caminho/para/imagens/
 
+# Exportar para CSV
+python -m src.core.predict_batch --dir imagens/ --output resultados.csv
 
-## Key Files
+# Gerar Grad-CAM para cada imagem
+python -m src.core.predict_batch --dir imagens/ --save-gradcam
+```
 
-| File | Description |
-|------|-------------|
-| [model.py](/home/felipe/Documents/Projetos/covid-tb-pneumonia-detector/src/model.py) | Defines the neural network architecture, training process, and evaluation metrics. Supports multiple CNN backbones. |
-| [predict.py](/home/felipe/Documents/Projetos/covid-tb-pneumonia-detector/src/predict.py) | Handles single image prediction with visualization options. Contains the `load_and_preprocess_image()` and `predict_image()` functions. |
-| [predict_batch.py](/home/felipe/Documents/Projetos/covid-tb-pneumonia-detector/src/predict_batch.py) | Processes multiple images in a directory, generates CSV reports and optionally creates Grad-CAM visualizations. |
-| [interpret.py](/home/felipe/Documents/Projetos/covid-tb-pneumonia-detector/src/interpret.py) | Implements Grad-CAM visualization techniques to highlight regions of interest in X-ray images that influenced predictions. |
-| [install.sh](/home/felipe/Documents/Projetos/covid-tb-pneumonia-detector/scripts/install.sh) | Linux installation script for setting up the required Python environment and dependencies. |
-| [install.bat](/home/felipe/Documents/Projetos/covid-tb-pneumonia-detector/scripts/install.bat) | Windows installation script for setting up the required Python environment and dependencies. |
-| [requirements.txt](/home/felipe/Documents/Projetos/covid-tb-pneumonia-detector/requirements.txt) | Lists all Python dependencies required by the project, including specific versions for compatibility. |
+### Interface Web
 
-## Performance
+```bash
+# Iniciar servidor
+python -m src.web.app
 
-The model achieves over 85% accuracy in classifying chest X-rays into the four categories.
+# Acessar no navegador
+# http://localhost:5000
+```
 
-Performance improvements:
-- **Class weights** to handle the imbalance between classes
-- **Fine-tuning** of base model layers for better feature extraction
-- **Enhanced augmentation** for better generalization
-- **Multiple backbone options** including MobileNetV2, ResNet50V2, EfficientNetB0, and InceptionV3
-- **Learning rate scheduling** for improved convergence
+## 📚 Documentação
 
-Evaluation uses accuracy, precision, recall, F1-score, and confusion matrix, with results saved in the `results/` directory.
+Documentação detalhada disponível em [docs/](docs/):
 
-## Troubleshooting
+- [Arquitetura do Sistema](docs/ARCHITECTURE.md)
+- [Guia de Uso](docs/USAGE.md)
 
-- **Directory error:** Verify that the dataset structure is correct
-- **Python version error:** Use Python 3.9
-- **Memory issues:** Reduce batch size or use a GPU with more VRAM
-- **Unexpected results:** Ensure that input images are similar to those in the training set
+## 📊 Performance
 
-## Team
+O modelo atinge **>85% de acurácia** na classificação das quatro categorias.
 
-This project is maintained by:
+**Técnicas utilizadas:**
 
-* **Lead Developer**: Felipe Lima and Rafael Miguez
-* **Contributors**: Danilo Scheltes, Felipe Lima and Rafael Miguez
+- ✅ Transfer Learning com backbones pré-treinados no ImageNet
+- ✅ Fine-tuning das camadas superiores
+- ✅ Class weights para balanceamento
+- ✅ Data augmentation avançado
+- ✅ Learning rate scheduling com ReduceLROnPlateau
+- ✅ Early stopping para evitar overfitting
+
+**Métricas avaliadas:**
+- Acurácia, Precisão, Recall, F1-Score
+- Matriz de Confusão
+- Sensibilidade e Especificidade por classe
+
+Resultados são salvos automaticamente em `results/`.
+
+## 🛠️ Troubleshooting
+
+| Problema | Solução |
+|----------|---------|
+| Erro de diretório | Verifique a estrutura do dataset |
+| Erro de versão Python | Use Python 3.9+ |
+| Memória insuficiente | Reduza `--batch-size` ou use GPU |
+| Resultados inconsistentes | Certifique-se que as imagens são raios-X torácicos de boa qualidade |
+
+## 👥 Equipe
+
+**Desenvolvedores:**
+- Felipe Lima
+- Rafael Miguez
+
+**Contribuidores:**
+- Danilo Scheltes
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+<p align="center">
+  Desenvolvido como projeto acadêmico 🎓
+</p>

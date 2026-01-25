@@ -1,1 +1,3 @@
-# Torna o diretório src um pacote Python.
+"""
+Pacote principal do COVID-TB-Pneumonia Detector.
+"""
